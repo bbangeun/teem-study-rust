@@ -1,29 +1,36 @@
-mod agent;
-use actix_web::{web, App, HttpServer, Responder, HttpRequest};
+mod config;
+mod errors;
+mod panes;
 
-async fn welcome(request: HttpRequest) -> impl Responder {
-    let name = request.match_info().get("name").unwrap_or("World");
-    format!("Hello {}!", &name)
-}
+use ::config::Config;
+use actix_web::{App, HttpServer, web};
+use dotenv::dotenv;
+use tokio_postgres::NoTls;
 
-async fn get_agents() -> impl Responder {
-    let mut vec:Vec<agent::common::AgentInfo> = Vec::new();
-    println!("get_agents!");
-    agent::get_agents(&mut vec);
-    return web::Json(vec);
-}
+use crate::config::ServerConfig;
+use panes::handlers::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
 
-    HttpServer::new(|| {
+    let config_ = Config::builder()
+        .add_source(::config::Environment::default())
+        .build()
+        .unwrap();
+
+    let config: ServerConfig = config_.try_deserialize().unwrap();
+
+    let pool = config.pg.create_pool(None, NoTls).unwrap();
+
+    let server = HttpServer::new(move || {
         App::new()
-            .route("/",web::get().to(welcome))
-            .route("/welcome/{name}", web::get().to(welcome))
-            .route("/agents", web::get().to(get_agents))
-
+            .app_data(web::Data::new(pool.clone()))
+            .service(web::resource("/panes").route(web::post().to(add_pane)))
     })
-        .bind(("127.0.0.1", 8080)).unwrap()
-        .run()
-        .await
+        .bind(config.server_addr.clone())?
+        .run();
+    println!("Server running at http://{}/", config.server_addr);
+
+    server.await
 }
