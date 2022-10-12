@@ -7,6 +7,6 @@ mod db;
 #[derive(Deserialize, PostgresMapper, Serialize)]
 #[pg_mapper(table = "panes")]
 pub struct Pane {
-    pub page: i32,
+    pub page_id: i32,
     pub structure: String,
 }

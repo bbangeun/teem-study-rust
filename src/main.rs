@@ -26,7 +26,8 @@ async fn main() -> std::io::Result<()> {
     let server = HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
-            .service(web::resource("/panes").route(web::post().to(add_pane)))
+            .service(web::resource("/pane/{page_id}").route(web::get().to(get_pane)))
+            .service(web::resource("/pane").route(web::post().to(add_pane)))
     })
         .bind(config.server_addr.clone())?
         .run();

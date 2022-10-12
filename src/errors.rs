@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 use actix_web::{HttpResponse, ResponseError};
 use deadpool_postgres::PoolError;
-use derive_more::{Display, From};
+use derive_more::{From};
 use tokio_pg_mapper::Error as PGMError;
 use tokio_postgres::error::Error as PGError;
 

@@ -1,1 +1,1 @@
-SELECT $table_fields FROM panes;
+SELECT * FROM panes where page_id = $1;
