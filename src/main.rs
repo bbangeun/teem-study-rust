@@ -4,6 +4,8 @@ mod panes;
 
 use ::config::Config;
 use actix_web::{App, HttpServer, web};
+use actix_cors::Cors;
+use actix_web::http::header;
 use dotenv::dotenv;
 use tokio_postgres::NoTls;
 
@@ -24,7 +26,16 @@ async fn main() -> std::io::Result<()> {
     let pool = config.pg.create_pool(None, NoTls).unwrap();
 
     let server = HttpServer::new(move || {
+
+        let cors = Cors::default()
+            .allowed_origin("http://localhost:5173")
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+            .allowed_header(header::CONTENT_TYPE)
+            .max_age(3600);
+
         App::new()
+            .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
             .service(web::resource("/pane/{page_id}").route(web::get().to(get_pane)))
             .service(web::resource("/pane").route(web::post().to(add_pane)))
