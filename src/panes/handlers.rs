@@ -31,3 +31,17 @@ pub async fn add_pane(
 
     Ok(HttpResponse::Ok().json(new_pane))
 }
+
+pub async fn save_pane(
+    pane: web::Json<Pane>,
+    db_pool: web::Data<Pool>,
+) -> Result<HttpResponse, Error> {
+
+    let pane_info: Pane = pane.into_inner();
+
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+
+    let pane_info = db::save_pane(&client, pane_info).await?;
+
+    Ok(HttpResponse::Ok().json(pane_info))
+}

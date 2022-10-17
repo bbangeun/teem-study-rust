@@ -38,7 +38,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(pool.clone()))
             .service(web::resource("/pane/{page_id}").route(web::get().to(get_pane)))
-            .service(web::resource("/pane").route(web::post().to(add_pane)))
+            // .service(web::resource("/pane").route(web::post().to(add_pane)))
+            .service(web::resource("/pane").route(web::post().to(save_pane)))
     })
         .bind(config.server_addr.clone())?
         .run();
