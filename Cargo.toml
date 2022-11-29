@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 actix-web = "4"
 actix-cors = "0.6.3"
+actix-web-lab = "0.18.5"
 config = "0.13.1"
 deadpool-postgres = { version = "0.10.2", features = ["serde"] }
 derive_more = "0.99.17"
@@ -15,4 +16,9 @@ dotenv = "0.15.0"
 serde = { version = "1.0.137", features = ["derive"] }
 tokio-pg-mapper = "0.2.0"
 tokio-pg-mapper-derive = "0.2.0"
-tokio-postgres = "0.7.6"
+tokio-postgres = { version = "0.7.6", features = ["with-chrono-0_4"] }
+async-graphql = { version = "4.0.16", features = ["chrono"]}
+async-graphql-actix-web = "4.0.16"
+env_logger = "0.9"
+log = "0.4"
+chrono = "0.4.23"
